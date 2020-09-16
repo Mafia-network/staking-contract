@@ -1,7 +1,3 @@
-/**
- *Submitted for verification at Etherscan.io on 2020-09-02
-*/
-
 // File: https://github.com/OpenZeppelin/openzeppelin-contracts/contracts/token/ERC20/SafeERC20.sol
 
 // SPDX-License-Identifier: MIT
@@ -801,7 +797,7 @@ contract ERC20 is Context, IERC20 {
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual { }
 }
 
-// File: browser/CatnipToken.sol
+// File: browser/MpointsToken.sol
 
 
 pragma solidity ^0.6.0;
@@ -809,12 +805,12 @@ pragma solidity ^0.6.0;
 
 
 
-contract CatnipToken is ERC20 {
+contract MpointsToken is ERC20 {
     
     struct stakeTracker {
         uint256 lastBlockChecked;
         uint256 rewards;
-        uint256 nyanStaked;
+        uint256 mafiStaked;
     }
 
     address private owner;
@@ -824,19 +820,19 @@ contract CatnipToken is ERC20 {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
  
-    address private nyanAddress;
-    IERC20 private nyanToken;
+    address private mafiAddress;
+    IERC20 private mafiToken;
 
-    uint256 private _totalNyanStaked;
+    uint256 private _totalMafiStaked;
     mapping(address => stakeTracker) private _stakedBalances;
     
-    constructor() public ERC20("Catnip", "NIP") {
+    constructor() public ERC20("Mpoints", "MPO") {
         owner = msg.sender;
         _mint(msg.sender, 1000 * (10 ** 18));
         rewardsVar = 100000;
     }
     
-    event Staked(address indexed user, uint256 amount, uint256 totalNyanStaked);
+    event Staked(address indexed user, uint256 amount, uint256 totalMafiStaked);
     event Withdrawn(address indexed user, uint256 amount);
     event Rewards(address indexed user, uint256 reward);
     
@@ -852,10 +848,10 @@ contract CatnipToken is ERC20 {
                                         
                                         
              
-            if (_stakedBalances[account].nyanStaked > 0) {
+            if (_stakedBalances[account].mafiStaked > 0) {
                 _stakedBalances[account].rewards = _stakedBalances[account].rewards
                                                                             .add(
-                                                                            _stakedBalances[account].nyanStaked
+                                                                            _stakedBalances[account].mafiStaked
                                                                             .mul(rewardBlocks)
                                                                             / rewardsVar);
             }
@@ -868,9 +864,9 @@ contract CatnipToken is ERC20 {
     }
 
 
-    function setNyanAddress(address _nyanAddress) public _onlyOwner returns(uint256) {
-        nyanAddress = _nyanAddress;
-        nyanToken = IERC20(_nyanAddress);
+    function setMafiAddress(address _mafiAddress) public _onlyOwner returns(uint256) {
+        mafiAddress = _mafiAddress;
+        mafiToken = IERC20(_mafiAddress);
     }
     
     function updatingStakingReward(address account) public returns(uint256) {
@@ -879,10 +875,10 @@ contract CatnipToken is ERC20 {
                                         .sub(_stakedBalances[account].lastBlockChecked);
                                         
                                         
-            if (_stakedBalances[account].nyanStaked > 0) {
+            if (_stakedBalances[account].mafiStaked > 0) {
                 _stakedBalances[account].rewards = _stakedBalances[account].rewards
                                                                             .add(
-                                                                            _stakedBalances[account].nyanStaked
+                                                                            _stakedBalances[account].mafiStaked
                                                                             .mul(rewardBlocks)
                                                                             / rewardsVar);
             }
@@ -904,7 +900,7 @@ contract CatnipToken is ERC20 {
     }
 
     function getAddressStakeAmount(address _account) public view returns (uint256) {
-        return _stakedBalances[_account].nyanStaked;
+        return _stakedBalances[_account].mafiStaked;
     }
     
     function setRewardsVar(uint256 _amount) public _onlyOwner {
@@ -912,7 +908,7 @@ contract CatnipToken is ERC20 {
     }
     
     function totalStakedSupply() public view returns (uint256) {
-        return _totalNyanStaked;
+        return _totalMafiStaked;
     }
 
     function myRewardsBalance(address account) public view returns (uint256) {
@@ -922,10 +918,10 @@ contract CatnipToken is ERC20 {
                                         
                                         
              
-            if (_stakedBalances[account].nyanStaked > 0) {
+            if (_stakedBalances[account].mafiStaked > 0) {
                 return _stakedBalances[account].rewards
                                                 .add(
-                                                _stakedBalances[account].nyanStaked
+                                                _stakedBalances[account].mafiStaked
                                                 .mul(rewardBlocks)
                                                 / rewardsVar);
             }                                                  
@@ -934,16 +930,16 @@ contract CatnipToken is ERC20 {
     }
 
     function stake(uint256 amount) public updateStakingReward(msg.sender) {
-        _totalNyanStaked = _totalNyanStaked.add(amount);
-        _stakedBalances[msg.sender].nyanStaked = _stakedBalances[msg.sender].nyanStaked.add(amount);
-        nyanToken.safeTransferFrom(msg.sender, address(this), amount);
-        emit Staked(msg.sender, amount, _totalNyanStaked);
+        _totalMafiStaked = _totalMafiStaked.add(amount);
+        _stakedBalances[msg.sender].mafiStaked = _stakedBalances[msg.sender].mafiStaked.add(amount);
+        mafiToken.safeTransferFrom(msg.sender, address(this), amount);
+        emit Staked(msg.sender, amount, _totalMafiStaked);
     }
 
     function withdraw(uint256 amount) public updateStakingReward(msg.sender) {
-        _totalNyanStaked = _totalNyanStaked.sub(amount);
-        _stakedBalances[msg.sender].nyanStaked = _stakedBalances[msg.sender].nyanStaked.sub(amount);
-        nyanToken.safeTransfer(msg.sender, amount);
+        _totalMafiStaked = _totalMafiStaked.sub(amount);
+        _stakedBalances[msg.sender].mafiStaked = _stakedBalances[msg.sender].mafiStaked.sub(amount);
+        mafiToken.safeTransfer(msg.sender, amount);
         emit Withdrawn(msg.sender, amount);
     }
     
@@ -952,7 +948,7 @@ contract CatnipToken is ERC20 {
        _stakedBalances[msg.sender].rewards = 0;
        _mint(msg.sender, reward.mul(8) / 10);
        uint256 fundingPoolReward = reward.mul(2) / 10;
-       _mint(nyanAddress, fundingPoolReward);
+       _mint(mafiAddress, fundingPoolReward);
        emit Rewards(msg.sender, reward);
    }
 
