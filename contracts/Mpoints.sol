@@ -60,6 +60,13 @@ contract MpointsToken is ERC20 {
     }
 
     /**
+     * @dev Check owner
+     */
+    function isOwner() public view returns (bool){
+        return msg.sender == owner;
+    }
+
+    /**
      * @dev Set Mafi Token Address
      * @param _mafiAddress address
      */
